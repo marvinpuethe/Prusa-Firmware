@@ -5248,25 +5248,27 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		Prints mesh bed leveling status and bed profile if activated.
         */
         case 81:
-            if (mbl.active) {
-                SERIAL_PROTOCOLPGM("Num X,Y: ");
-                SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
-                SERIAL_PROTOCOLPGM(",");
-                SERIAL_PROTOCOL(MESH_NUM_Y_POINTS);
-                SERIAL_PROTOCOLPGM("\nZ search height: ");
-                SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
-                SERIAL_PROTOCOLLNPGM("\nMeasured points:");
-                for (int y = MESH_NUM_Y_POINTS-1; y >= 0; y--) {
-                    for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
-                        SERIAL_PROTOCOLPGM("  ");
-                        SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
-                    }
-                    SERIAL_PROTOCOLPGM("\n");
-                }
-            }
-            else
-                SERIAL_PROTOCOLLNPGM("Mesh bed leveling not active.");
-            break;
+           if (mbl.active) {
+               SERIAL_PROTOCOLPGM("Num X,Y: ");
+               SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
+               SERIAL_PROTOCOLPGM(",");
+               SERIAL_PROTOCOL(MESH_NUM_Y_POINTS);
+               SERIAL_PROTOCOLPGM("\nZ search height: ");
+               SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
+               SERIAL_PROTOCOLLNPGM("\nMeasured points:");
+               
+               float midPoint = mbl.z_values[((MESH_NUM_Y_POINTS+1)/2)-1][((MESH_NUM_Y_POINTS+1)/2)-1];
+               for (int y = MESH_NUM_Y_POINTS-1; y >= 0; y--) {
+                   for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
+                       SERIAL_PROTOCOLPGM("  ");
+                       SERIAL_PROTOCOL_F(mbl.z_values[y][x] - midPoint, 5);
+                   }
+                   SERIAL_PROTOCOLPGM("\n");
+               }
+           }
+           else
+               SERIAL_PROTOCOLLNPGM("Mesh bed leveling not active.");
+           break;
             
 #if 0
         /*!
