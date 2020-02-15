@@ -710,7 +710,7 @@ bool xyzcal_searchZ(void)
 	while (z > -2300) //-6mm + 0.25mm
 	{
 		uint16_t ad = 0;
-		if (xyzcal_spiral8(x0, y0, z, 100, 900, 320, 1, &ad)) //dz=100 radius=900 delay=400
+		if (xyzcal_spiral8(x0, y0, z, 100, 200, 320, 1, &ad)) //dz=100 radius=900 delay=400
 		{
 			int16_t x_on = _X;
 			int16_t y_on = _Y;
@@ -752,7 +752,7 @@ bool xyzcal_scan_and_process(void)
 	}
 	uint8_t c = 0;
 	uint8_t r = 0;
-	if (xyzcal_find_pattern_12x12_in_32x32(pixels, pattern, &c, &r) > 66) //total pixels=144, corner=12 (1/2 = 66)
+	if (xyzcal_find_pattern_12x12_in_32x32(pixels, pattern, &c, &r) >= 40) //total pixels=144, corner=12 (1/2 = 66)
 	{
 		DBG(_n(" pattern found at %d %d\n"), c, r);
 		c += 6;
