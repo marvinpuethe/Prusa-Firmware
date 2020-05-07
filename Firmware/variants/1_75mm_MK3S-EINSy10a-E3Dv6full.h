@@ -285,15 +285,15 @@
 // original values (16, 20, 35, 30) for R and H (8, 10, 20, 18) for R_Home
 #define TMC2130_CURRENTS_H \
     {                      \
-        28, 30, 35, 30     \
+        24, 30, 40, 35     \
     } // default holding currents for all axes
 #define TMC2130_CURRENTS_R \
     {                      \
-        28, 30, 35, 30     \
+        24, 30, 40, 35     \
     } // default running currents for all axes
 #define TMC2130_CURRENTS_R_HOME \
     {                           \
-        14, 15, 20, 18          \
+        12, 15, 20, 18          \
     } // homing running currents for all axes
 // #define TMC2130_UNLOAD_CURRENT_R 12			 // lower current for M600 to protect filament sensor - Unused
 
