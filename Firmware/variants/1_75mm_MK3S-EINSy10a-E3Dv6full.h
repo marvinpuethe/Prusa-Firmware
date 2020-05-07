@@ -265,10 +265,10 @@
 #define TMC2130_SG_THRS_HOME {3, 3, TMC2130_SG_THRS_Z, TMC2130_SG_THRS_E}
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
-// original values (16, 20, 35, 30)
-#define TMC2130_CURRENTS_H {28, 35, 60, 52}  // default holding currents for all axes 
-#define TMC2130_CURRENTS_R {28, 35, 60, 52}  // default running currents for all axes
-#define TMC2130_CURRENTS_R_HOME {14, 35, 35, 49}  // homing running currents for all axes
+// original values (16, 20, 35, 30) for R and H (8, 10, 20, 18) for R_Home
+#define TMC2130_CURRENTS_H {28, 35, 20, 30}  // default holding currents for all axes 
+#define TMC2130_CURRENTS_R {28, 35, 20, 30}  // default running currents for all axes
+#define TMC2130_CURRENTS_R_HOME {14, 35, 20, 18}  // homing running currents for all axes
 // #define TMC2130_UNLOAD_CURRENT_R 12			 // lower current for M600 to protect filament sensor - Unused
 
 #define TMC2130_STEALTH_Z
