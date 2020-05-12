@@ -905,21 +905,17 @@ static void check_if_fw_is_on_right_printer()
   {
 #ifdef IR_SENSOR
     swi2c_init();
-    const uint8_t pat9125_detected = swi2c_readByte_A8(PAT9125_I2C_ADDR, 0x00, NULL);
-    if (pat9125_detected)
-    {
-      lcd_show_fullscreen_message_and_wait_P(_i("MK3S firmware detected on MK3 printer"));
-    }
-#endif //IR_SENSOR
+    const uint8_t pat9125_detected = swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
+      if (pat9125_detected){
+        lcd_show_fullscreen_message_and_wait_P(_i("MK3S firmware detected on MK3 printer"));}////c=20 r=3
+    #endif //IR_SENSOR
 
-#ifdef PAT9125
-    //will return 1 only if IR can detect filament in bondtech extruder so this may fail even when we have IR sensor
-    const uint8_t ir_detected = !(PIN_GET(IR_SENSOR_PIN));
-    if (ir_detected)
-    {
-      lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));
-    }
-#endif //PAT9125
+    #ifdef PAT9125
+      //will return 1 only if IR can detect filament in bondtech extruder so this may fail even when we have IR sensor
+      const uint8_t ir_detected = !(PIN_GET(IR_SENSOR_PIN));
+      if (ir_detected){
+        lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));}////c=20 r=3
+    #endif //PAT9125
   }
 #endif //FILAMENT_SENSOR
 }
@@ -1566,63 +1562,54 @@ void setup()
     show_fw_version_warnings();
   }
 
-  switch (hw_changed)
-  {
-    //if motherboard or printer type was changed inform user as it can indicate flashing wrong firmware version
-    //if user confirms with knob, new hw version (printer and/or motherboard) is written to eeprom and message will be not shown next time
-  case (0b01):
-    lcd_show_fullscreen_message_and_wait_P(_i("Warning: motherboard type changed.")); ////MSG_CHANGED_MOTHERBOARD c=20 r=4
-    eeprom_write_word((uint16_t *)EEPROM_BOARD_TYPE, MOTHERBOARD);
-    break;
-  case (0b10):
-    lcd_show_fullscreen_message_and_wait_P(_i("Warning: printer type changed.")); ////MSG_CHANGED_PRINTER c=20 r=4
-    eeprom_write_word((uint16_t *)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
-    break;
-  case (0b11):
-    lcd_show_fullscreen_message_and_wait_P(_i("Warning: both printer type and motherboard type changed.")); ////MSG_CHANGED_BOTH c=20 r=4
-    eeprom_write_word((uint16_t *)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
-    eeprom_write_word((uint16_t *)EEPROM_BOARD_TYPE, MOTHERBOARD);
-    break;
-  default:
-    break; //no change, show no message
+  switch (hw_changed) {
+	  //if motherboard or printer type was changed inform user as it can indicate flashing wrong firmware version
+	  //if user confirms with knob, new hw version (printer and/or motherboard) is written to eeprom and message will be not shown next time
+	case(0b01):
+		lcd_show_fullscreen_message_and_wait_P(_i("Warning: motherboard type changed.")); ////MSG_CHANGED_MOTHERBOARD c=20 r=4
+		eeprom_write_word((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD);
+		break;
+	case(0b10):
+		lcd_show_fullscreen_message_and_wait_P(_i("Warning: printer type changed.")); ////MSG_CHANGED_PRINTER c=20 r=4
+		eeprom_write_word((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
+		break;
+	case(0b11):
+		lcd_show_fullscreen_message_and_wait_P(_i("Warning: both printer type and motherboard type changed.")); ////MSG_CHANGED_BOTH c=20 r=4
+		eeprom_write_word((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
+		eeprom_write_word((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD);
+		break;
+	default: break; //no change, show no message
   }
 
-  if (!previous_settings_retrieved)
-  {
-    lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
-    Config_StoreSettings();
+  if (!previous_settings_retrieved) {
+	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
+	  Config_StoreSettings();
   }
-  if (eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE) == 1)
-  {
-    lcd_wizard(WizState::Run);
+  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
+	  lcd_wizard(WizState::Run);
   }
-  if (eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE) == 0)
-  { //dont show calibration status messages if wizard is currently active
-    if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
-        calibration_status() == CALIBRATION_STATUS_UNKNOWN ||
-        calibration_status() == CALIBRATION_STATUS_XYZ_CALIBRATION)
-    {
-      // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
-      eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)), 0);
-      // Show the message.
-      lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_CALIBRATION_FLOW));
-    }
-    else if (calibration_status() == CALIBRATION_STATUS_LIVE_ADJUST)
-    {
-      // Show the message.
-      lcd_show_fullscreen_message_and_wait_P(_T(MSG_BABYSTEP_Z_NOT_SET));
-      lcd_update_enable(true);
-    }
-    else if (calibration_status() == CALIBRATION_STATUS_CALIBRATED && temp_cal_active == true && calibration_status_pinda() == false)
-    {
-      //lcd_show_fullscreen_message_and_wait_P(_i("Temperature calibration has not been run yet"));////MSG_PINDA_NOT_CALIBRATED c=20 r=4
-      lcd_update_enable(true);
-    }
-    else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION)
-    {
-      // Show the message.
-      lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_Z_CALIBRATION_FLOW));
-    }
+  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active
+	  if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
+		  calibration_status() == CALIBRATION_STATUS_UNKNOWN ||
+		  calibration_status() == CALIBRATION_STATUS_XYZ_CALIBRATION) {
+		  // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
+            eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
+		  // Show the message.
+		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_CALIBRATION_FLOW));
+	  }
+	  else if (calibration_status() == CALIBRATION_STATUS_LIVE_ADJUST) {
+		  // Show the message.
+		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_BABYSTEP_Z_NOT_SET));
+		  lcd_update_enable(true);
+	  }
+	  else if (calibration_status() == CALIBRATION_STATUS_CALIBRATED && temp_cal_active == true && calibration_status_pinda() == false) {
+		  //lcd_show_fullscreen_message_and_wait_P(_i("Temperature calibration has not been run yet"));////MSG_PINDA_NOT_CALIBRATED c=20 r=4
+		  lcd_update_enable(true);
+	  }
+	  else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
+		  // Show the message.
+		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_Z_CALIBRATION_FLOW));
+	  }
   }
 
 #if !defined(DEBUG_DISABLE_FORCE_SELFTEST) && defined(TMC2130)
@@ -10028,41 +10015,38 @@ void manage_inactivity(bool ignore_stepper_queue /*=false*/) //default argument 
 					}
 				}
 #endif
-        // the trouble is, I can hold the filament in the hole in such a way, that it creates the exact voltage
-        // to be detected as the new fsensor
-        // We can either fake it by extending the detection window to a looooong time
-        // or do some other countermeasures
+				// the trouble is, I can hold the filament in the hole in such a way, that it creates the exact voltage
+				// to be detected as the new fsensor
+				// We can either fake it by extending the detection window to a looooong time
+				// or do some other countermeasures
 
-        // what we want to detect:
-        // if minvolt gets below ~0.6V, it means there is an old fsensor
-        // if maxvolt gets above 4.6V, it means we either have an old fsensor or broken cables/fsensor
-        // So I'm waiting for a situation, when minVolt gets to range <0, 0.7> and maxVolt gets into range <4.4, 5>
-        // If and only if minVolt is in range <0.6, 0.7> and maxVolt is in range <4.4, 4.5>, I'm considering a situation with the new fsensor
-        // otherwise, I don't care
+				// what we want to detect:
+				// if minvolt gets below ~0.6V, it means there is an old fsensor
+				// if maxvolt gets above 4.6V, it means we either have an old fsensor or broken cables/fsensor
+				// So I'm waiting for a situation, when minVolt gets to range <0, 0.7> and maxVolt gets into range <4.4, 5>
+				// If and only if minVolt is in range <0.6, 0.7> and maxVolt is in range <4.4, 4.5>, I'm considering a situation with the new fsensor
+				// otherwise, I don't care
 
-        if (minVolt >= Voltage2Raw(0.3F) && minVolt <= Voltage2Raw(0.5F) && maxVolt >= Voltage2Raw(4.2F) && maxVolt <= Voltage2Raw(4.6F))
-        {
-          bool bTemp = (!CHECK_ALL_HEATERS);
-          bTemp = bTemp && (menu_menu == lcd_status_screen);
-          bTemp = bTemp && ((oFsensorPCB == ClFsensorPCB::_Old) || (oFsensorPCB == ClFsensorPCB::_Undef));
-          bTemp = bTemp && fsensor_enabled;
-          if (bTemp)
-          {
-            nFSCheckCount++;
-            if (nFSCheckCount > FS_CHECK_COUNT)
-            {
-              nFSCheckCount = 0; // not necessary
-              oFsensorPCB = ClFsensorPCB::_Rev04;
-              eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_PCB, (uint8_t)oFsensorPCB);
-              printf_IRSensorAnalogBoardChange(true);
-              lcd_setstatuspgm(_i("FS v0.4 or newer"));
-            }
-          }
-          else
-          {
-            nFSCheckCount = 0;
-          }
-        }
+				if( minVolt >= Voltage2Raw(0.3F) && minVolt <= Voltage2Raw(0.5F)
+				 && maxVolt >= Voltage2Raw(4.2F) && maxVolt <= Voltage2Raw(4.6F)
+				){
+                    bool bTemp = (!CHECK_ALL_HEATERS);
+                    bTemp = bTemp && (menu_menu==lcd_status_screen);
+                    bTemp = bTemp && ((oFsensorPCB==ClFsensorPCB::_Old)||(oFsensorPCB==ClFsensorPCB::_Undef));
+                    bTemp = bTemp && fsensor_enabled;
+                    if(bTemp){
+                         nFSCheckCount++;
+                         if(nFSCheckCount>FS_CHECK_COUNT){
+                              nFSCheckCount=0;    // not necessary
+                              oFsensorPCB=ClFsensorPCB::_Rev04;
+                              eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
+                              printf_IRSensorAnalogBoardChange(true);
+                              lcd_setstatuspgm(_i("FS v0.4 or newer"));////c=18
+                         }
+                    } else {
+						nFSCheckCount=0;
+					}
+				}
 #endif // IR_SENSOR_ANALOG
         if (fsensor_check_autoload())
         {
@@ -11481,12 +11465,11 @@ ISR(INT4_vect)
     uvlo_tiny();
 }
 
-void recover_print(uint8_t automatic)
-{
-  char cmd[30];
-  lcd_update_enable(true);
-  lcd_update(2);
-  lcd_setstatuspgm(_i("Recovering print    ")); ////MSG_RECOVERING_PRINT c=20 r=1
+void recover_print(uint8_t automatic) {
+	char cmd[30];
+	lcd_update_enable(true);
+	lcd_update(2);
+  lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20
 
   // Recover position, temperatures and extrude_multipliers
   bool mbl_was_active = recover_machine_state_after_power_panic();
