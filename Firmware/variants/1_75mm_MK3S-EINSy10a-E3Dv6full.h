@@ -285,11 +285,11 @@
 // original values (16, 20, 35, 30) for R and H (8, 10, 20, 18) for R_Home
 #define TMC2130_CURRENTS_H \
     {                      \
-        28, 35, 52, 35     \
+        35, 35, 52, 35     \
     } // default holding currents for all axes
 #define TMC2130_CURRENTS_R \
     {                      \
-        28, 35, 52, 35     \
+        35, 35, 52, 35     \
     } // default running currents for all axes
 #define TMC2130_CURRENTS_R_HOME \
     {                           \
