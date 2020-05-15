@@ -786,7 +786,7 @@ bool xyzcal_scan_and_process(void)
 	}
 	uint8_t c = 0;
 	uint8_t r = 0;
-	if (xyzcal_find_pattern_12x12_in_32x32(pixels, pattern, &c, &r) > 45) //total pixels=144, corner=12 (1/2 = 66)
+	if (xyzcal_find_pattern_12x12_in_32x32(pixels, pattern, &c, &r) >= 40) //total pixels=144, corner=12 (1/2 = 66)
 	{
 		DBG(_n(" pattern found at %d %d\n"), c, r);
 		c += 6;
