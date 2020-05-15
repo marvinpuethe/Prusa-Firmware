@@ -816,7 +816,7 @@ int uart_putchar(char c, FILE *)
 void lcd_splash()
 {
   lcd_clear(); // clears display and homes screen
-  lcd_puts_P(PSTR("\n Prusa i3 MK3S\n   Marvin Püthe"));
+  lcd_puts_P(PSTR("\n   Prusa i3 MK3S\n   Marvin Puethe"));
 }
 
 void factory_reset()
